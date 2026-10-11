@@ -1,57 +1,49 @@
 # bank-customer-churn
-Churn analysis of a retail bank's 10,000 customers: 20 business questions answered with Python and SQL, a Tableau dashboard design, and prioritised retention recommendations.
+Churn analysis of a retail bank's 10,000 customers: 20 business questions answered Tableau dashboard design, and prioritised retention recommendations.
 
-**Tools:** Python (pandas, scikit-learn), SQL, Tableau
-**Dashboard:** 
+**Tools:**  Tableau
 
 ---
 
-## 1. Project summary
+## 1. Dashboard
+
+![Dashboard Screenshot](Overview.png) 
+
+## 2. Project summary
 
 | | |
 |---|---|
-| Customers | 10,000 (no missing values, no duplicate CustomerIds) |
-| Churned | 2,038 (**20.4%**) |
+| Customers | 10,000  |
+| Churned | 2,038 (20.4%) |
 | Balance held by churned customers | 185.7M (24.3% of total balances; currency not specified in the data) |
-| Biggest drivers | Age 40+, inactivity, Germany, product count (1 or 3+), gender |
-| Segment to target | **Inactive customers aged 40+: 49.4% churn, and 45.6% of all churners** |
+| Biggest drivers | Age 40+, inactivity, Germany, product count (3 & 4), gender |
+| Segment to target | Inactive customers, aged 40+ |
 
-### Headline findings
+###  Findings
 1. **Germany churns at 32.4%, double France (16.2%) and Spain (16.7%).** It holds 25% of customers but 40% of churners and **53% of the balance lost**.
 2. **Age is the strongest demographic driver.** Churn rises from 7.5% (18-30) to 34.0% (41-50) and 56.2% (51-60).
 3. **Inactivity nearly doubles churn** (26.9% vs 14.3%), and it compounds with age: inactive customers aged 51-60 churn at 85.7%.
-4. **Two products is the sweet spot (7.6% churn).** One product: 27.7%. Three products: 82.7%. Four products: 100% (60 of 60).
+4. **The higher the product, more likely to churn.** One product: 27.7%. Three products: 82.7%. Four products: 100% (60 of 60).
 5. **Women churn more than men** (25.1% vs 16.5%), in every country.
-6. **Things that do not matter much:** tenure, credit score, salary, card type, having a credit card, points earned, and satisfaction score are all roughly flat.
-7. **Data-leakage warning:** `Complain` is a near-perfect proxy for the outcome (see section 5).
+6. **Things that do not matter much:** tenure, credit score, salary, card type, having a credit card are all roughly flat.
 
 ---
 
-## 2. Dataset
+## 3. Dataset
 
-`Customer-Churn-Records.csv`: 10,000 rows, 18 columns. Appears to be a public Kaggle bank-churn dataset; check the source licence before redistributing it, and consider not committing the raw file (add it to `.gitignore` and link to the source).
+`Customer-Churn-Records.csv`: 10,000 rows, 18 columns. From public Kaggle bank-churn dataset.
 
-| Column | Meaning |
-|---|---|
-| CustomerId, RowNumber, Surname | Identifiers (excluded from modelling) |
-| CreditScore, Age, Tenure, Balance, EstimatedSalary | Customer profile |
-| Geography, Gender | France / Germany / Spain; Female / Male |
-| NumOfProducts, HasCrCard, IsActiveMember | Product holding and engagement |
-| Complain, Satisfaction Score, Card Type, Point Earned | Service and card data |
-| **Exited** | Target: 1 = churned |
 
----
 
-## 3. Twenty business questions and answers
+## 4. 20 business questions and answers
 
-All figures are computed from the dataset (`analysis/churn_analysis.py`; key queries in `sql/churn_queries.sql`). Rates are churn rates unless stated.
 
 ### A. Overall picture
 **Q1. What is the overall churn rate?**
 20.4% (2,038 of 10,000). Roughly 1 in 5 customers has left.
 
 **Q2. How much money is walking out the door?**
-Churned customers held 185.7M in balances, 24.3% of all balances. Their average balance (91.1K) is **25% higher** than retained customers' (72.7K), so the bank is losing better-than-average customers. Every 1-point reduction in churn is about 100 customers, or roughly 9.1M in balances.
+Churned customers held 185.7M in balances, 24.3% of all balances. Their average balance (91.1K) is **25% higher** than retained customers' (72.7K), so the bank is losing higher than average customers. 
 
 ### B. Who churns (demographics)
 **Q3. Which country has the biggest problem?**
@@ -69,7 +61,7 @@ Yes. Female 25.1% vs male 16.5%. The gap holds in every country: France 20.3 vs 
 | 51-60 | 797 | **56.2%** |
 | 60+ | 464 | 24.8% |
 
-Customers aged 41-60 are 31% of the base but 60.6% of churners. Average age: churned 44.8 vs retained 37.4.
+Customers aged 41-60 are 31% of the base but 60.6% of churners.
 
 **Q6. Where do most churners come from, by age?**
 41-50 is the largest pool of churners (38.7%), then 31-40 (26.4%), then 51-60 (22.0%). The 51-60 band has the highest rate but a smaller pool, so the 41-50 band is the bigger volume opportunity.
@@ -86,7 +78,7 @@ Yes: 26.9% vs 14.3%. Inactive members are 48.5% of customers and 63.9% of churne
 | 3 | 266 | 82.7% |
 | 4 | 60 | 100% |
 
-Cross-selling from 1 to 2 products looks protective, but 3+ is a red flag. Only 326 customers hold 3+, yet 280 churned (85.9%). Causation is unclear: aggressive upselling, a product problem, or already-unhappy customers.
+ 1 to 2 products looks protective, but 3+ is a red flag. Only 326 customers hold 3+, yet 280 churned (85.9%).Possibly an aggressive upselling, a product problem, or already-unhappy customers.
 
 **Q9. Does having a credit card matter?**
 No. 20.2% (has card) vs 20.8% (no card).
@@ -109,10 +101,10 @@ No. Salary quartiles range 19.8% to 21.6%.
 
 ### E. Service and satisfaction
 **Q15. Do complaints predict churn?**
-Overwhelmingly: 99.5% of complainers churned (2,034 of 2,044) vs 0.05% of non-complainers (4 of 7,956). See section 5 for why this is suspicious.
+Overwhelmingly 99.5% of complainers churned (2,034 of 2,044) vs 0.05% of non-complainers (4 of 7,956)
 
 **Q16. Does satisfaction score predict churn?**
-No. Churn is 20.0%, 21.8%, 19.6%, 20.6%, 19.8% across scores 1 to 5. This is surprising; the score may be collected after the complaint is handled, or be unreliable. Recommend reviewing how it is collected before using it.
+No. Churn is 20.0%, 21.8%, 19.6%, 20.6%, 19.8% across scores 1 to 5. 
 
 ### F. Combinations and segments
 **Q17. What is the single highest-risk segment?**
@@ -129,21 +121,10 @@ Inactive customers aged 40+: **1,880 customers, 49.4% churn, 929 churners = 45.6
 
 Even **active** German customers aged 41+ churn at 40-47%, so Germany has a problem that engagement alone does not fix. Germany aged 40+ overall: 1,140 customers at 50.8%.
 
-**Q19. Does activity protect older customers?**
-Partly. Active customers churn less in every age band (e.g. 41-50: 25.4% active vs 41.6% inactive; 60+: 11.2% vs 82.0%). Re-activating inactive older customers is the highest-leverage move.
-
-### G. Prediction
-**Q20. Can we predict who will churn, and what matters most?**
-A random forest (80/20 stratified split, `class_weight="balanced"`) **without** `Complain` gives:
-- ROC-AUC **0.871**
-- Churner recall 71%, precision 57% (accuracy 83%)
-- Top features: Age (0.28), NumOfProducts (0.17), Balance (0.11), EstimatedSalary, Point_Earned, CreditScore (0.07 each), Geography_Germany (0.05), IsActiveMember (0.05)
-
-This agrees with the descriptive analysis: age, product count, balance, geography and activity are the core drivers. (Salary, points and credit score rank highly mostly because they are continuous variables the forest can split many ways; the group-level analysis shows they have little real effect.)
 
 ---
 
-## 4. Recommendations
+## 5. Recommendations
 
 | Priority | Action | Why |
 |---|---|---|
@@ -153,35 +134,17 @@ This agrees with the descriptive analysis: age, product count, balance, geograph
 | 4 | **Retention offers for high-balance customers** (100K+) | Churned customers hold 25% more on average; 185.7M at stake |
 | 5 | **Complaint handling and early-warning**: fix resolution process, and review why satisfaction scores do not track churn | 99.5% of complainers leave |
 | 6 | **Women-focused research** (survey or interviews) | 8.6-point gap that holds in every country |
-| 7 | **Rethink the points/card-tier programme** | No visible effect on churn |
 
-Illustrative impact: cutting churn in the 40+ inactive segment from 49.4% to 40% would retain roughly 177 customers (1,880 x 9.4%), and about 1 point of overall churn per 100 customers retained. Treat this as a scenario, not a forecast.
+cutting churn in the 40+ inactive segment from 49.4% to 40% would retain roughly 177 customers (1,880 x 9.4%), and about 1 point of overall churn per 100 customers retained.
 
 ---
 
-## 5. Data quality and caveats
+## 6. Data quality and caveats
 
-- **`Complain` is likely leakage.** 2,034 of the 2,038 churners complained, and 10 of 2,044 complainers stayed. It is probably recorded at or after the point of exit, so it is not a usable early-warning signal. Including it gives an AUC of 1.000 and the model "learns" the target (it accounts for 83% of feature importance). I excluded it from the predictive model and treat it as a service-quality signal in descriptive analysis only. Confirm with the data owner when the field is captured.
-- **Correlation is not causation.** The 3-4 product result in particular may reflect who gets sold those products.
+
 - **Small samples:** 3+ product customers (n=326) and some segment cells are small; counts are shown in the dashboard tooltips.
 - **Static snapshot:** no dates, so churn timing, cohorts and trends over time cannot be analysed.
-- **Data provenance:** the dataset looks like a public, possibly synthetic, dataset. Findings describe this data and may not generalise to a real bank.
 - **Currency** is not specified; balances are shown as plain numbers.
-- Model is a baseline: no hyperparameter tuning or cross-validation yet.
 
 ---
 
-## 6. Repository structure
-
-```
-bank-churn-analysis/
-├── README.md
-├── requirements.txt
-├── data/                      # put Customer-Churn-Records.csv here (see note above)
-├── analysis/
-│   └── churn_analysis.py      # all analysis + model
-├── sql/
-│   └── churn_queries.sql      # SQL versions of the key questions
-└── dashboard/
-    └── tableau_build_guide.md # calculated fields and dashboard layout
-```
